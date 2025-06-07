@@ -1,7 +1,6 @@
-flask
+Flask
 langchain
 langchain-google-genai
-langchain-core
 google-generativeai
 langchain-pinecone
 pinecone-client

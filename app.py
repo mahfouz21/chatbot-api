@@ -63,5 +63,32 @@ def ask():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    answer = None
+    if request.method == 'POST':
+        user_input = request.form.get('question')
+        if user_input:
+            try:
+                response = rag_chain.invoke({"input": user_input})
+                answer = response["answer"]
+            except Exception as e:
+                answer = f"Error: {str(e)}"
+    return '''
+        <html>
+            <head><title>Chatbot</title></head>
+            <body>
+                <h1>Medical Chatbot</h1>
+                <form method="post">
+                    <input type="text" name="question" placeholder="Ask a question" style="width:300px;" required />
+                    <button type="submit">Ask</button>
+                </form>
+                <div style="margin-top:20px;">
+                    <strong>Answer:</strong> {}</div>
+            </body>
+        </html>
+    '''.format(answer if answer else "")
+
 if __name__ == '__main__':
-   app.run(debug=True, use_reloader=False)
+   port = int(os.environ.get('PORT', 5000))
+   app.run(debug=True, use_reloader=False, host='0.0.0.0', port=port)
